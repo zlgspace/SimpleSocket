@@ -31,6 +31,11 @@ public class SimpleSocketMng  {
         }
 
         @Override
+        public void onSocketConnected() {
+
+        }
+
+        @Override
         public void onSocketRcvMsg(String s) {
             Log.d("SimpleSocketMng","onSocketRcvMsg,接收到来自服务端的消息："+s);
             simpleSocket.sendMsg("谢谢！");
@@ -39,6 +44,11 @@ public class SimpleSocketMng  {
         @Override
         public void onSocketError(Exception e) {
             Log.e("SimpleSocketMng","onSocketError",e);
+        }
+
+        @Override
+        public void onSocketDisConnected() {
+
         }
 
         @Override

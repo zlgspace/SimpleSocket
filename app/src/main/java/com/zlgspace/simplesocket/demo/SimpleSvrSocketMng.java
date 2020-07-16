@@ -3,7 +3,6 @@ package com.zlgspace.simplesocket.demo;
 import android.util.Log;
 
 import com.zlgspace.simplesocket.SimpleServerSocket;
-import com.zlgspace.simplesocket.SimpleSocket;
 
 public class SimpleSvrSocketMng {
 
@@ -31,13 +30,18 @@ public class SimpleSvrSocketMng {
         }
 
         @Override
-        public void onSvrSocketAccpetClient(SimpleSocket client) {
+        public void onSvrSocketAccpetClient(SimpleServerSocket.SocketClientHandler client) {
             Log.d("SimpleSvrSocketMng","onSvrSocketAccpetClient");
             client.sendMsg("你好，欢迎访问！");
         }
 
         @Override
-        public void onSvrSocketRcvMsg(SimpleSocket client, String msg) {
+        public void onSvrSocketLoseClient(SimpleServerSocket.SocketClientHandler handler) {
+            Log.d("SimpleSvrSocketMng","onSvrSocketLoseClient");
+        }
+
+        @Override
+        public void onSvrSocketRcvMsg(SimpleServerSocket.SocketClientHandler client, String msg) {
             Log.d("SimpleSvrSocketMng","onSvrSocketRcvMsg,接收到来自客户端的消息:"+msg);
         }
 
