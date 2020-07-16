@@ -106,12 +106,15 @@ class SimpleClientSocket extends Thread implements ISimpleSocketClient{
     public void run() {
         try {
             initSocket();
+            checkConnected();
             rcvMsg();
-        } catch (IOException e) {
+        } catch (Exception e) {
             if(callback!=null)
                 callback.onSocketError(e);
-            close();
         }finally {
+            close();
+            if(callback!=null)
+                callback.onSocketDisConnected();
             if(callback!=null)
                 callback.onSocketDestory();
         }
@@ -147,6 +150,16 @@ class SimpleClientSocket extends Thread implements ISimpleSocketClient{
         out = socket.getOutputStream();
         if(callback!=null)
             callback.onSocketInited();
+    }
+
+    private void checkConnected() throws IOException, InterruptedException {
+        Thread.sleep(300);
+        boolean isConnected = socket!=null&&!socket.isClosed()&&socket.isConnected();
+        if(callback!=null) {
+            if (isConnected) {
+                callback.onSocketConnected();
+            }
+        }
     }
 
     private void rcvMsg() throws IOException {

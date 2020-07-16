@@ -18,7 +18,7 @@ class DataHelper {
         byte msgLenBuf[] = new byte[4];
         readMsgToBuf(in,msgLenBuf);
         int msgLen = (int)getUintFromBuf(msgLenBuf,0);
-        System.out.println("DataHelper:rcvPacket,msgLen = "+msgLen);
+//        System.out.println("DataHelper:rcvPacket,msgLen = "+msgLen);
         if(msgLen <= 0){
             return null;
         }

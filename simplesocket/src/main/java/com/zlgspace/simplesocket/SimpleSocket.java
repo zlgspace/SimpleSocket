@@ -128,6 +128,12 @@ public class SimpleSocket implements ISimpleSocketClient{
         }
 
         @Override
+        public void onSocketConnected() {
+            if(callback!=null)
+                callback.onSocketConnected();
+        }
+
+        @Override
         public void onSocketRcvMsg(final byte[] data) {
             rcvMsgExecutorService.execute(new Runnable() {
                 @Override
@@ -151,6 +157,12 @@ public class SimpleSocket implements ISimpleSocketClient{
         }
 
         @Override
+        public void onSocketDisConnected() {
+            if(callback!=null)
+                callback.onSocketDisConnected();
+        }
+
+        @Override
         public void onSocketDestory() {
             rcvMsgExecutorService.execute(new Runnable() {
                 @Override
@@ -164,8 +176,10 @@ public class SimpleSocket implements ISimpleSocketClient{
 
     public interface Callback<T> {
         void onSocketInited();
+        void onSocketConnected();
         void onSocketRcvMsg(T t);
         void onSocketError(Exception e);
+        void onSocketDisConnected();
         void onSocketDestory();
     }
 

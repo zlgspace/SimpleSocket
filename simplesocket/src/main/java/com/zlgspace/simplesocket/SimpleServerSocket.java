@@ -150,15 +150,18 @@ public class SimpleServerSocket extends Thread{
 
     public interface Callback<T>{
         void onSvrSocketInited();
-        void onSvrSocketAccpetClient(SimpleSocket client);
-        void onSvrSocketRcvMsg(SimpleSocket client,T t);
+        void onSvrSocketAccpetClient(SocketClientHandler handler);
+        void onSvrSocketLoseClient(SocketClientHandler handler);
+        void onSvrSocketRcvMsg(SocketClientHandler handler,T t);
         void onSvrSocketError(Exception e);
         void onSvrSocketDestory();
     }
 
-    private class SocketClientHandler implements SimpleSocket.Callback<byte[]> {
+    public class SocketClientHandler implements SimpleSocket.Callback<byte[]> {
 
         private SimpleSocket simpleSocket;
+
+        private SimpleSocket.Callback privateCbk;
 
         public SocketClientHandler(Socket socket){
             addSocketClientHandle(this);
@@ -179,26 +182,51 @@ public class SimpleServerSocket extends Thread{
             return simpleSocket;
         }
 
+        public void setCallback(SimpleSocket.Callback cbk){
+            privateCbk = cbk;
+        }
+
         @Override
         public void onSocketInited() {
             addSocketClientHandle(this);
             if(callback!=null)
-                callback.onSvrSocketAccpetClient(simpleSocket);
+                callback.onSvrSocketAccpetClient(this);
+
+            if(privateCbk!=null)
+                privateCbk.onSocketInited();
+        }
+
+        @Override
+        public void onSocketConnected() {
+            if(privateCbk!=null)
+                privateCbk.onSocketConnected();
         }
 
         @Override
         public void onSocketRcvMsg(byte msg[]) {
             if(callback!=null)
-                callback.onSvrSocketRcvMsg(simpleSocket,analysisAdapter.analysisMsg(msg));
+                callback.onSvrSocketRcvMsg(this,analysisAdapter.analysisMsg(msg));
         }
 
         @Override
         public void onSocketError(Exception e) {
+            if(privateCbk!=null)
+                privateCbk.onSocketError(e);
+        }
 
+        @Override
+        public void onSocketDisConnected() {
+            if(privateCbk!=null)
+                privateCbk.onSocketDisConnected();
+
+            if(callback!=null)
+                callback.onSvrSocketLoseClient(this);
         }
 
         @Override
         public void onSocketDestory() {
+            if(privateCbk!=null)
+                privateCbk.onSocketDestory();
             removeSocketClientHandle(this);
         }
     }
